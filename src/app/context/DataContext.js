@@ -45,22 +45,31 @@ export const DataProvider = ({ children }) => {
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
-    const updated = { ...data, budgets: [...data.budgets, newBudget] };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, budgets: [...prev.budgets, newBudget] };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
     return newBudget;
   };
 
   const updateBudget = (id, updates) => {
-    const updated = {
-      ...data,
-      budgets: data.budgets.map(b => b.id === id ? { ...b, ...updates } : b),
-    };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = {
+        ...prev,
+        budgets: prev.budgets.map(b => b.id === id ? { ...b, ...updates } : b),
+      };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const deleteBudget = (id) => {
-    const updated = { ...data, budgets: data.budgets.filter(b => b.id !== id) };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, budgets: prev.budgets.filter(b => b.id !== id) };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Transaction functions
@@ -70,14 +79,20 @@ export const DataProvider = ({ children }) => {
       id: Date.now().toString(),
       date: new Date().toISOString(),
     };
-    const updated = { ...data, transactions: [...data.transactions, newTransaction] };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, transactions: [...prev.transactions, newTransaction] };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
     return newTransaction;
   };
 
   const deleteTransaction = (id) => {
-    const updated = { ...data, transactions: data.transactions.filter(t => t.id !== id) };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, transactions: prev.transactions.filter(t => t.id !== id) };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Pot functions
@@ -88,22 +103,31 @@ export const DataProvider = ({ children }) => {
       saved: 0,
       createdAt: new Date().toISOString(),
     };
-    const updated = { ...data, pots: [...data.pots, newPot] };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, pots: [...prev.pots, newPot] };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
     return newPot;
   };
 
   const updatePot = (id, updates) => {
-    const updated = {
-      ...data,
-      pots: data.pots.map(p => p.id === id ? { ...p, ...updates } : p),
-    };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = {
+        ...prev,
+        pots: prev.pots.map(p => p.id === id ? { ...p, ...updates } : p),
+      };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const deletePot = (id) => {
-    const updated = { ...data, pots: data.pots.filter(p => p.id !== id) };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, pots: prev.pots.filter(p => p.id !== id) };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   // Recurring bill functions
@@ -113,22 +137,31 @@ export const DataProvider = ({ children }) => {
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
-    const updated = { ...data, recurringBills: [...data.recurringBills, newBill] };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, recurringBills: [...prev.recurringBills, newBill] };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
     return newBill;
   };
 
   const deleteRecurringBill = (id) => {
-    const updated = { ...data, recurringBills: data.recurringBills.filter(b => b.id !== id) };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = { ...prev, recurringBills: prev.recurringBills.filter(b => b.id !== id) };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const updateRecurringBill = (id, updates) => {
-    const updated = {
-      ...data,
-      recurringBills: data.recurringBills.map(b => b.id === id ? { ...b, ...updates } : b),
-    };
-    saveData(updated);
+    saveData((prev) => {
+      const updated = {
+        ...prev,
+        recurringBills: prev.recurringBills.map(b => b.id === id ? { ...b, ...updates } : b),
+      };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const markRecurringBillAsPaid = (id) => {
@@ -141,7 +174,14 @@ export const DataProvider = ({ children }) => {
       date: new Date().toISOString(),
     });
 
-    updateRecurringBill(id, { paid: true, lastPaidAt: new Date().toISOString() });
+    saveData((prev) => {
+      const updated = {
+        ...prev,
+        recurringBills: prev.recurringBills.map(b => b.id === id ? { ...b, paid: true, lastPaidAt: new Date().toISOString() } : b),
+      };
+      localStorage.setItem('appData', JSON.stringify(updated));
+      return updated;
+    });
     return paymentTransaction;
   };
 

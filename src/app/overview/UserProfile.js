@@ -85,10 +85,9 @@ const Avatar = styled.button`
 
 const Dropdown = styled.div`
   position: absolute;
-  bottom: 100%;
-  right: 0;
-  left: -17px;
-  bottom: 50px;
+  bottom: 0;
+  left: -210px;
+  bottom: -190px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

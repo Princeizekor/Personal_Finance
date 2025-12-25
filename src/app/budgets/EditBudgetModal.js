@@ -26,24 +26,24 @@ const themeColors = [
 
 export default function EditBudgetModal({ isOpen, onClose, onUpdate, budget }) {
   const [category, setCategory] = useState("");
-  const [maxSpend, setMaxSpend] = useState("");
-  const [theme, setTheme] = useState("");
+  const [limit, setLimit] = useState("");
+  const [color, setColor] = useState("");
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (budget && isOpen) {
-      setCategory(budget.category);
-      setMaxSpend(budget.maxSpend.toString());
-      setTheme(budget.theme);
+      setCategory(budget.category || budget.name || "");
+      setLimit((budget.limit !== undefined ? budget.limit : budget.maxSpend || 0).toString());
+      setColor(budget.color || budget.theme || "");
     }
   }, [budget, isOpen]);
 
   const validateForm = () => {
     const newErrors = {};
     if (!category) newErrors.category = "Please select a category";
-    if (!maxSpend) newErrors.maxSpend = "Please enter maximum spend";
-    if (isNaN(maxSpend) || parseFloat(maxSpend) <= 0)
-      newErrors.maxSpend = "Please enter a valid amount";
+    if (!limit) newErrors.limit = "Please enter maximum spend";
+    if (isNaN(limit) || parseFloat(limit) <= 0)
+      newErrors.limit = "Please enter a valid amount";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,8 +55,8 @@ export default function EditBudgetModal({ isOpen, onClose, onUpdate, budget }) {
     const updatedBudget = {
       ...budget,
       category,
-      maxSpend: parseFloat(maxSpend),
-      theme,
+      limit: parseFloat(limit),
+      color,
     };
 
     onUpdate(updatedBudget);
@@ -99,39 +99,40 @@ export default function EditBudgetModal({ isOpen, onClose, onUpdate, budget }) {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="maxSpend">Maximum Spend</Label>
+              <Label htmlFor="limit">Maximum Spend</Label>
               <InputWrapper>
                 <DollarSign>$</DollarSign>
                 <Input
-                  id="maxSpend"
+                  id="limit"
                   type="number"
                   placeholder="e.g. 50.00"
-                  value={maxSpend}
+                  value={limit}
                   onChange={(e) => {
-                    setMaxSpend(e.target.value);
-                    if (errors.maxSpend) {
-                      setErrors({ ...errors, maxSpend: "" });
+                    setLimit(e.target.value);
+                    if (errors.limit) {
+                      setErrors({ ...errors, limit: "" });
                     }
                   }}
                   step="0.01"
                   min="0"
                 />
               </InputWrapper>
-              {errors.maxSpend && <ErrorText>{errors.maxSpend}</ErrorText>}
+              {errors.limit && <ErrorText>{errors.limit}</ErrorText>}
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="theme">Theme Color</Label>
+              <Label htmlFor="color">Theme Color</Label>
               <ColorGrid>
-                {themeColors.map((color) => (
+                {themeColors.map((c) => (
                   <ColorOption
-                    key={color.value}
-                    selected={theme === color.value}
-                    onClick={() => setTheme(color.value)}
-                    title={color.name}
+                    key={c.value}
+                    type="button"
+                    selected={color === c.value}
+                    onClick={() => setColor(c.value)}
+                    title={c.name}
                   >
-                    <ColorBox color={color.value} />
-                    {theme === color.value && <CheckMark>✓</CheckMark>}
+                    <ColorBox color={c.value} />
+                    {color === c.value && <CheckMark>✓</CheckMark>}
                   </ColorOption>
                 ))}
               </ColorGrid>

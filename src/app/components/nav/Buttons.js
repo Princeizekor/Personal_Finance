@@ -12,19 +12,19 @@ export const OverviewButton = styled.button`
   margin-bottom: 0.5rem;
   padding: 0rem 1.5rem;
   align-items: center;
-  background: none;
+  background: ${(props) => props.active ? "rgba(255, 255, 255, 0.1)" : "none"};
   cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
-  color: #201f24;
+    color: #201f24;
     background-color: rgba(255, 255, 255, 0.1);
   }
   
   &:active,
   &:focus {
     color: #201f24;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);;
   }
   
   img {
@@ -47,7 +47,7 @@ export const MinimizeButton = styled.button`
   left: 0;
   padding: 0rem 1.5rem;
   align-items: center;
-  background: none;
+  background: ${(props) => props.active ? "rgba(255, 255, 255, 0.1)" : "none"};
   cursor: pointer;
   transition: all 0.3s ease;
   
@@ -58,7 +58,7 @@ export const MinimizeButton = styled.button`
   &:active,
   &:focus {
     color: #201f24;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);;
   }
   
   img {

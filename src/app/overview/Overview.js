@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import Link from 'next/link';
+import UserMenu from "./UserProfile";
 
 export default function Overview() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export default function Overview() {
           <h1>Welcome back, {user?.firstName}!</h1>
           <p>Here's your financial overview</p>
         </div>
+        <UserMenu />
       </Header>
 
       <GridContainer>

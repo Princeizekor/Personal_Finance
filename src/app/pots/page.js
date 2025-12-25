@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useData } from '../context/DataContext';
 
 export default function PotsPage() {
-  const { data, addPot, updatePot, deletePot } = useData();
+  const { data, addPot, updatePot, deletePot, addTransaction } = useData();
   const pots = data.pots;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -67,8 +67,16 @@ export default function PotsPage() {
   const handleAddMoney = (pot) => {
     const amount = prompt(`Add money to ${pot.name}:`, '0');
     if (amount && parseFloat(amount) > 0) {
+      const numAmount = parseFloat(amount);
       updatePot(pot.id, {
-        saved: (pot.saved || 0) + parseFloat(amount),
+        saved: (pot.saved || 0) + numAmount,
+      });
+      // Create a transaction for the saving
+      addTransaction({
+        title: `Saved to ${pot.name}`,
+        category: 'Savings',
+        amount: -numAmount,
+        date: new Date().toISOString(),
       });
     }
   };
@@ -76,8 +84,16 @@ export default function PotsPage() {
   const handleWithdraw = (pot) => {
     const amount = prompt(`Withdraw from ${pot.name}:`, '0');
     if (amount && parseFloat(amount) > 0) {
-      const newSaved = Math.max(0, (pot.saved || 0) - parseFloat(amount));
+      const numAmount = parseFloat(amount);
+      const newSaved = Math.max(0, (pot.saved || 0) - numAmount);
       updatePot(pot.id, { saved: newSaved });
+      // Create a transaction for the withdrawal
+      addTransaction({
+        title: `Withdrawn from ${pot.name}`,
+        category: 'Savings',
+        amount: numAmount,
+        date: new Date().toISOString(),
+      });
     }
   };
 

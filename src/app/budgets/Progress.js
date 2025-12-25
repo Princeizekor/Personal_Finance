@@ -5,32 +5,32 @@ import EllipsisMenu from "./EllipsisMenu";
 import styled from "styled-components";
 
 export default function Progress({ budget, onEdit, onDelete }) {
-  const percentageUsed = (budget.spent / budget.maxSpend) * 100;
-  const remaining = budget.maxSpend - budget.spent;
+  const percentageUsed = (budget.spent || 0) / (budget.limit || 1) * 100;
+  const remaining = (budget.limit || 0) - (budget.spent || 0);
 
   return (
     <Wrapper>
       <div className="progress">
         <div className="title-wrap">
           <div className="title">
-             <ColorDot color={budget.theme} />
-            <p className="word">{budget.category}</p>
+             <ColorDot color={budget.color || '#14746f'} />
+            <p className="word">{budget.name || budget.category}</p>
           </div>
           <EllipsisMenu onEdit={onEdit} onDelete={onDelete} />
         </div>
-        <p className="max">Maximum of ${budget.maxSpend.toFixed(2)}</p>
+        <p className="max">Maximum of ${(budget.limit || 0).toFixed(2)}</p>
         <div className="progress-bar">
           {/* <div className="loader"></div> */}
           <ProgressFill
-            color={budget.theme}
+            color={budget.color || '#14746f'}
             width={Math.min(percentageUsed, 100)}
           />
         </div>
         <div className="spending">
-            <Bar color={budget.theme} />
+            <Bar color={budget.color || '#14746f'} />
           <div>
             <p>Spent</p>
-            <p>${budget.spent.toFixed(2)}</p>
+            <p>${(budget.spent || 0).toFixed(2)}</p>
           </div>
           <Bar color="#f5f3ef" />
           <div>

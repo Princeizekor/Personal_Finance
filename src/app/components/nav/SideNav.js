@@ -6,12 +6,14 @@ import { NavData } from "@/app/datas/NavData";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function SideNav() {
   const [minimized, setMinimized] = useState(false);
+  const [activePath, setActivePath] = useState("");
   const router = useRouter();
+  const pathname = usePathname();
   const { logout, user } = useAuth();
 
   useEffect(() => {
@@ -22,6 +24,10 @@ export default function SideNav() {
       setMinimized(false);
     }
   }, []);
+
+  useEffect(() => {
+    setActivePath(pathname);
+  }, [pathname]);
 
   const toggleMinimize = () => {
     setMinimized((prev) => {
@@ -57,7 +63,10 @@ export default function SideNav() {
       <NavSection>
         {NavData.map((data) => (
           <Link href={data.link} key={data.id}>
-            <OverviewButton aria-label={data.text}>
+            <OverviewButton 
+              active={activePath === data.link || activePath === data.link + "/"}
+              aria-label={data.text}
+            >
               <Image src={data.img} alt={data.alt} width={20} height={20} />
               <Label className="label">{data.text}</Label>
             </OverviewButton>
@@ -67,7 +76,12 @@ export default function SideNav() {
 
       <FooterSection minimized={minimized}>
         <Controls>
-          <MinimizeButton as="button" onClick={toggleMinimize} aria-pressed={minimized}>
+          <MinimizeButton 
+            as="button" 
+            onClick={toggleMinimize} 
+            active={false}
+            aria-pressed={minimized}
+          >
             <Image
               src="/assets/images/icon-minimize-menu.svg"
               alt="Minimize Icon"
@@ -77,15 +91,16 @@ export default function SideNav() {
             <Label className="label">{minimized ? "Expand" : "Minimize"}</Label>
           </MinimizeButton>
 
-          {user && (
+          {/* {user && (
             <SignOutButton onClick={handleSignOut} aria-label="Sign out">
               <Image src="/assets/images/icon-logout.svg" alt="Logout" width={16} height={16} />
               <Label className="label">Sign Out</Label>
             </SignOutButton>
-          )}
+          )} */}
+          <UserMenu className="user-menu" />
         </Controls>
 
-        <UserMenu />
+        
       </FooterSection>
     </Wrapper>
   );
@@ -146,7 +161,7 @@ const Wrapper = styled.div`
     }
 
     .label { display: none; }
-    ${UserMenu} { display: none; }
+    .user-menu { display: none; }
   }
 `;
 
@@ -155,7 +170,10 @@ const HeaderSection = styled.div`
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const LogoButton = styled.div`

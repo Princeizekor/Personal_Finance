@@ -3,25 +3,25 @@ import styled from "styled-components";
 import EllipsisMenu from "./EllipsisMenu";
 
 export default function BudgetCard({ budget, onEdit, onDelete }) {
-  const percentageUsed = (budget.spent / budget.maxSpend) * 100;
-  const remaining = budget.maxSpend - budget.spent;
+  const percentageUsed = (budget.spent || 0) / (budget.limit || 1) * 100;
+  const remaining = (budget.limit || 0) - (budget.spent || 0);
 
   return (
     <Card>
       <CardHeader>
         <CategoryInfo>
-          <ColorDot color={budget.theme} />
-          <CategoryName>{budget.category}</CategoryName>
+          <ColorDot color={budget.color || '#667eea'} />
+          <CategoryName>{budget.name || budget.category}</CategoryName>
         </CategoryInfo>
         <EllipsisMenu onEdit={onEdit} onDelete={onDelete} />
       </CardHeader>
 
-      <MaxSpend>Maximum of ${budget.maxSpend.toFixed(2)}</MaxSpend>
+      <MaxSpend>Maximum of ${(budget.limit || 0).toFixed(2)}</MaxSpend>
 
       <ProgressBarContainer>
         <ProgressBar>
           <ProgressFill
-            color={budget.theme}
+            color={budget.color || '#667eea'}
             width={Math.min(percentageUsed, 100)}
           />
         </ProgressBar>
@@ -29,15 +29,15 @@ export default function BudgetCard({ budget, onEdit, onDelete }) {
 
       <SpendingInfo>
         <SpendingItem>
-          <SpendingBar color={budget.theme} />
+          <SpendingBar color={budget.color || '#667eea'} />
           <SpendingDetails>
             <Label>Spent</Label>
-            <Amount>${budget.spent.toFixed(2)}</Amount>
+            <Amount>${(budget.spent || 0).toFixed(2)}</Amount>
           </SpendingDetails>
         </SpendingItem>
 
         <SpendingItem>
-          <SpendingBar color="#f5f3ef" />
+            <SpendingBar color="#f5f3ef" />
           <SpendingDetails>
             <Label>Remaining</Label>
             <Amount>${remaining.toFixed(2)}</Amount>

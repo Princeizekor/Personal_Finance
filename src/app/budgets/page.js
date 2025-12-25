@@ -5,6 +5,8 @@ import { useData } from "../context/DataContext";
 import AddBudgetModal from "./AddBudgetModal";
 import EditBudgetModal from "./EditBudgetModal";
 import DeleteBudgetModal from "./DeleteBudgetModal";
+import SpendingModal from "./SpendingModal";
+import EllipsisMenu from "./EllipsisMenu";
 
 const BUDGET_COLORS = [
   "#667eea", "#764ba2", "#f093fb", "#4facfe",
@@ -12,31 +14,51 @@ const BUDGET_COLORS = [
 ];
 
 export default function BudgetsPage() {
-  const { data, addBudget, updateBudget, deleteBudget } = useData();
+  const { data, addBudget, updateBudget, deleteBudget, addTransaction } = useData();
   const budgets = data.budgets;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isSpendingOpen, setIsSpendingOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState(null);
 
   const handleAddBudget = (budgetData) => {
     const newBudget = {
       ...budgetData,
-      color: BUDGET_COLORS[budgets.length % BUDGET_COLORS.length],
+      color: budgetData.color || BUDGET_COLORS[budgets.length % BUDGET_COLORS.length],
     };
     addBudget(newBudget);
     setIsAddOpen(false);
   };
 
   const handleEditBudget = (updatedBudget) => {
-    updateBudget(selectedBudget.id, updatedBudget);
+    const updates = {
+      name: updatedBudget.name || updatedBudget.category,
+      category: updatedBudget.category,
+      limit: updatedBudget.limit,
+      color: updatedBudget.color,
+    };
+    updateBudget(selectedBudget.id, updates);
     setIsEditOpen(false);
   };
 
   const handleDeleteBudget = () => {
     deleteBudget(selectedBudget.id);
     setIsDeleteOpen(false);
+  };
+
+  const handleAddSpending = (amount, description) => {
+    const newSpent = (selectedBudget.spent || 0) + amount;
+    updateBudget(selectedBudget.id, { spent: newSpent });
+    // Create a transaction for the spending
+    addTransaction({
+      title: description || selectedBudget.name,
+      category: selectedBudget.name || "Budget",
+      amount: -Math.abs(amount),
+      date: new Date().toISOString(),
+    });
+    setIsSpendingOpen(false);
   };
 
   const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
@@ -50,6 +72,11 @@ export default function BudgetsPage() {
   const handleOpenDelete = (budget) => {
     setSelectedBudget(budget);
     setIsDeleteOpen(true);
+  };
+
+  const handleOpenSpending = (budget) => {
+    setSelectedBudget(budget);
+    setIsSpendingOpen(true);
   };
 
   return (
@@ -100,9 +127,10 @@ export default function BudgetsPage() {
                     <ColorDot color={budget.color || "#667eea"} />
                     <CategoryName>{budget.name || budget.category}</CategoryName>
                   </CategoryInfo>
-                  <MoreButton onClick={() => handleOpenEdit(budget)}>
-                    ⋯
-                  </MoreButton>
+                  <EllipsisMenu
+                    onEdit={() => handleOpenEdit(budget)}
+                    onDelete={() => handleOpenDelete(budget)}
+                  />
                 </CardHeader>
 
                 <ProgressSection>
@@ -121,12 +149,9 @@ export default function BudgetsPage() {
                 </ProgressSection>
 
                 <CardFooter>
-                  <EditCardButton onClick={() => handleOpenEdit(budget)}>
-                    Edit
-                  </EditCardButton>
-                  <DeleteCardButton onClick={() => handleOpenDelete(budget)}>
-                    Delete
-                  </DeleteCardButton>
+                  <SpendButton onClick={() => handleOpenSpending(budget)}>
+                    + Add Spending
+                  </SpendButton>
                 </CardFooter>
               </BudgetCard>
             ))}
@@ -151,6 +176,13 @@ export default function BudgetsPage() {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleDeleteBudget}
+        budgetName={selectedBudget?.name || selectedBudget?.category}
+      />
+
+      <SpendingModal
+        isOpen={isSpendingOpen}
+        onClose={() => setIsSpendingOpen(false)}
+        onAdd={handleAddSpending}
         budgetName={selectedBudget?.name || selectedBudget?.category}
       />
     </Wrapper>
@@ -321,19 +353,6 @@ const CategoryName = styled.h3`
   color: #201f24;
 `;
 
-const MoreButton = styled.button`
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #999;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #201f24;
-  }
-`;
-
 const ProgressSection = styled.div`
   margin-bottom: 1.5rem;
 `;
@@ -392,6 +411,28 @@ const Remaining = styled.p`
 const CardFooter = styled.div`
   display: flex;
   gap: 0.75rem;
+`;
+
+const SpendButton = styled.button`
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 `;
 
 const CardButton = styled.button`
